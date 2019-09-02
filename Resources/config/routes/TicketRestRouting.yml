@@ -1,0 +1,3 @@
+helpdesk_api_ticket:
+    path:     /api/tickets
+    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController::ticketListRestAction
