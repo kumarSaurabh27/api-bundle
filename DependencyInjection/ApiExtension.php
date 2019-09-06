@@ -14,17 +14,9 @@ class ApiExtension extends Extension
         return 'uvdesk_api';
     }
 
-    // public function getConfiguration(array $configs, ContainerBuilder $container)
-    // {
-    //     return new Configuration();
-    // }
-
     public function load(array $configs, ContainerBuilder $container)
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
-
-        // Load bundle configurations
-        // $configuration = $this->getConfiguration($configs, $container);
     }
 }

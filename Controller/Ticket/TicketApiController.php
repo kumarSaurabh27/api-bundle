@@ -20,27 +20,6 @@ use Webkul\TicketBundle\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Webkul\DefaultBundle\Utils\RateLimit\Annotations\ControllerUsagePolicy;
 
-/**
- * @ControllerUsagePolicy (
- *  enabled = true,
- * 	autowire = true,
- * 	lifetime = "1 hour",
- * 	usage_limit = {
- * 		"basic": {
- * 			"quota": 300,
- * 			"intervals": {{"1 hour", 300}},
- * 		},
- * 		"pro": {
- * 			"quota": 400,
- * 			"intervals": {{"1 hour", 400}},
- * 		},
- * 		"enterprise": {
- * 			"quota": 500,
- * 			"intervals": {{"1 hour", 500}},
- * 		},
- * 	},
- * )
- */
 class TicketApiController extends Controller
 {
 
@@ -82,22 +61,22 @@ class TicketApiController extends Controller
      */
     public function ticketListRestAction(Request $request)
     {
-        dump('hey this is me here'); die;
-
         if($response = $this->get('api.token.service')->checkToken()) {
             return $response;
         }
 
         $json = [];
-        $repository = $this->getDoctrine()->getRepository('WebkulTicketBundle:Ticket');
-        $em = $this->getDoctrine()->getManager();
+        $ticketRepository = $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:Ticket');
+        $userRepository = $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:User');
 
-        $isAdmin = in_array($this->getUser()->getRole(), ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN']);
+        $em = $this->getDoctrine()->getManager();
+        
+        $isAdmin = in_array($this->getUser()->getRoles(), ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN']);
 
         if($isAdmin && $request->query->get('actAsType')) {
             switch($request->query->get('actAsType')) {
                 case 'customer': 
-                    $user = $em->getRepository('WebkulUserBundle:User')
+                    $user = $em->getRepository(':User')
                           ->findOneBy(
                                 array('email' => $request->query->get('actAsEmail'))
                             );
@@ -126,7 +105,7 @@ class TicketApiController extends Controller
             }
         }
 
-        $json = $repository->getAllTickets($request->query, $this->container);
+        $json = $ticketRepository->getAllTickets($request->query, $this->container);
         $json['userDetails'] = [
                         'user' => $this->getUser()->getId(),
                         'name' => $this->getUser()->getDetail()['agent']->getFirstname().' '.$this->getUser()->getDetail()['agent']->getLastname(),
@@ -134,11 +113,11 @@ class TicketApiController extends Controller
                         'role' => $isAdmin ? : (in_array('ROLE_AGENT_AGENT_KICK', $this->get('user.service')->getAgentPrivilege($this->getUser()->getId()))),
                         ];
         // $json['agents'] = $this->get('user.service')->getAgentsPartialDetails();
-        $json['status'] = $this->get('ticket.service')->getStatus();
-        $json['group'] = $this->get('user.service')->getUserGroups(); 
-        $json['team'] = $this->get('user.service')->getSubGroups();
-        $json['priority'] = $this->get('ticket.service')->getPriorities();
-        $json['type'] = $this->get('ticket.service')->getTypes();
+        // $json['status'] = $this->get('ticket.service')->getStatus();
+        $json['group'] = $userRepository->getSupportGroups(); 
+        $json['team'] =  $userRepository->getSupportTeams();
+        // $json['priority'] = $this->get('ticket.service')->getPriorities();
+        // $json['type'] = $this->get('ticket.service')->getTypes();
         // $json['source'] = $this->get('ticket.service')->getSources();
         if($isAdmin) {
             $json['mailbox'] = $this->get('ticket.service')->getMailboxes();

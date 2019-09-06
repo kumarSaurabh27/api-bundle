@@ -1,0 +1,16 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+    
+    Webkul\UVDesk\ApiBundle\:
+        resource: '../../*'
+        exclude: '../../{DependencyInjection,Templates,Package}'
+
+    api.token.service:
+        alias: Webkul\UVDesk\ApiBundle\Services\ApiTokenListener
+        public: true
+        
+    sensio_framework_extra.view.listener:
+        alias: Sensio\Bundle\FrameworkExtraBundle\EventListener\TemplateListener
