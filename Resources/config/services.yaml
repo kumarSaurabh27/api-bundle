@@ -1,0 +1,32 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+    
+    Webkul\UVDesk\ApiBundle\:
+        resource: '../../*'
+        exclude: '../../{DependencyInjection,Templates,Package}'
+
+    # # API Controllers
+    # Webkul\UVDesk\ApiBundle\API\:
+    #     resource: '%kernel.project_dir%/vendor/uvdesk/api-bundle/API'
+    #     tags: ['controller.service_arguments']
+    
+    # Security Guards
+    Webkul\UVDesk\ApiBundle\Security\Guards\:
+        resource: '%kernel.project_dir%/vendor/uvdesk/api-bundle/Security/Guards/*'
+        arguments: ['@service_container', '@security.firewall.map']
+    
+    # Exception Listeners
+    Webkul\UVDesk\ApiBundle\EventListeners\API\KernelException:
+        arguments: ['@security.firewall.map']
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+    
+    # Exception Listeners
+    Webkul\UVDesk\ApiBundle\EventListeners\API\KernelRequest:
+        arguments: ['@security.firewall.map']
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }
+            - { name: kernel.event_listener, event: kernel.response }
