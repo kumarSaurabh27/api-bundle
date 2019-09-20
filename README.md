@@ -20,3 +20,7 @@ License
 --------------
 
 The **APIBundle** and libraries included within the bundle are released under the MIT or BSD license.
+
+[1]: https://www.uvdesk.com/
+[2]: https://symfony.com/
+[3]: https://getcomposer.org/
