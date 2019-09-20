@@ -1,0 +1,7 @@
+uvdesk_api_bundle_public_routing_resources:
+    resource: "routes/ticketRestRouting.yaml"
+    prefix:   /{_locale}/api/
+    requirements:
+        _locale: '%app_locales%'
+    defaults:
+        _locale: '%locale%'
