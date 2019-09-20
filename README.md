@@ -15,7 +15,7 @@ The API bundle comes loaded with the following features:
   
 Installation
 --------------
-This bundle can be easily integrated into any Symfony application (though it is recommended that you're using [Symfony 4][3], or your project has a dependency on [Symfony Flex][4], as things have changed drastically with the newer Symfony versions). Before continuing, make sure that you're using PHP 7 or higher and have [Composer][5] installed. 
+This bundle can be easily integrated into any Symfony application (though it is recommended that you're using [Symfony 4][3] as things have changed drastically with the newer Symfony versions). Before continuing, make sure that you're using PHP 7 or higher and have [Composer][5] installed. 
 
 To require the core framework bundle into your symfony project, simply run the following from your project root:
 
