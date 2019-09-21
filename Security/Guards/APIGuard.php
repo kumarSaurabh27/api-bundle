@@ -45,7 +45,6 @@ class APIGuard extends AbstractGuardAuthenticator
 
         if (strpos(strtolower($request->headers->get('Authorization')), 'basic') === 0) {
             $authorization_key = substr($request->headers->get('Authorization'), 6);
-
             try {
                 list($email, $auth_token) = explode(':', base64_decode($authorization_key));
                 return ['email' => $email, 'auth_token' => $auth_token];
