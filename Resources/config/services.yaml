@@ -30,3 +30,8 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.request }
             - { name: kernel.event_listener, event: kernel.response }
+
+    # Public aliases
+    api.service:
+        public: true
+        class: Webkul\UVDesk\ApiBundle\Services\APIService
