@@ -22,4 +22,68 @@ helpdesk_api_assign_agent_to_ticket:
     controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController::assignAgentRestAction
     methods: [PUT]
 
+# Create Ticket Label
+helpdesk_api_add_label:
+    path: /ticket/label/add
+    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController::addLabelRestAction
+    methods: [POST]
+    
+# Edit Ticket Label
+helpdesk_api_edit_label:
+    path: /ticket/label/edit/{id}
+    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController::editLabelRestAction
+    methods: [PUT]
 
+# Delete Ticket Label
+helpdesk_api_delete_label:
+    path: /ticket/label/delete/{id}
+    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController::deleteLabelRestAction
+    methods: [DELETE]
+
+# Trash Single/Multiple Tickets
+api_mass_ticket_trash:
+    path: /tickets/trash
+    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massDeleteRestAction
+    methods: [PUT]
+
+# Delete Single/Multiple Tickets
+api_mass_ticket_delete:
+    path: /tickets/delete
+    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massDeleteForeverRestAction
+    methods: [DELETE]
+
+# Restore Single/Multiple Tickets
+api_mass_ticket_restore:
+    path: /tickets/restore
+    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massRestoreRestAction
+    methods: [PUT]
+
+# Assign Single/Multiple Tickets to Agent
+api_mass_ticket_assign_agent:
+    path: /tickets/assign-agent
+    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massAssignAgentRestAction
+    methods: [PUT]
+
+# Set status to Single/Multiple Tickets
+api_mass_ticket_status_change:
+    path: /tickets/set-status
+    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massStatusChangeRestAction
+    methods: [PUT]
+
+# Change group of Single/Multiple Tickets
+api_mass_ticket_group_change:
+    path: /tickets/set-group
+    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massGroupChangeRestAction
+    methods: [PUT]
+
+# Change Priority of Single/Multiple Tickets
+api_mass_ticket_priority_change:
+    path: /tickets/set-priority
+    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massPriorityChangeRestAction
+    methods: [PUT]
+
+# Set Label on Single/Multiple Tickets
+api_mass_ticket_label:
+    path: /tickets/set-label
+    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massMoveToLabelRestAction
+    methods: [PUT]

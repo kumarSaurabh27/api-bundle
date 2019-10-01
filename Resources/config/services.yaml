@@ -35,3 +35,5 @@ services:
     api.service:
         public: true
         class: Webkul\UVDesk\ApiBundle\Services\APIService
+        arguments:
+            $userService: '@Webkul\UVDesk\CoreFrameworkBundle\Services\UserService'
