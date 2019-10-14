@@ -188,14 +188,6 @@ class TicketApiController extends Controller
      */
     public function deleteTicketRestAction(Request $request)
     {
-        // try {
-        //     $this->isAuthorized('ROLE_AGENT_DELETE_TICKET');
-        // } catch(AccessDeniedException $e) {
-        //     $json['error'] = $this->get('translator')->trans('Error! Access Denied');
-        //     $json['description'] = $this->get('translator')->trans('You are not authorized to perform this Action.');
-        //     return new JsonResponse($json, Response::HTTP_UNAUTHORIZED);
-        // }
-
         $ticketId = $request->attributes->get('ticketId');
         $em = $this->getDoctrine()->getManager();
         $ticket = $em->getRepository('UVDeskCoreFrameworkBundle:Ticket')->find($ticketId);
@@ -300,7 +292,7 @@ class TicketApiController extends Controller
      * Method : POST
      * Example: /api/ticket/label/add
      * @param Object  "HTTP Request object with json request in Content" 
-     * @param User Object "Current User Object" 
+     * @param User Object Current User Object" 
      * @return JSON "JSON response"
      */
     public function addLabelRestAction(Request $request, UserInterface $user) 
@@ -411,7 +403,7 @@ class TicketApiController extends Controller
      *      {"name"="ids", "dataType"="array", "required"=true, "description"="ticket ids to be trashed"}
      *  }
      * @param Object  "HTTP Request object with json request in Content"
-     * @param $user "Object "Current User Object"  
+     * @param $user "Object Current User Object"  
      * @return JSON "JSON response"
      */
     public function massDeleteRestAction(Request $request, UserInterface $user)
@@ -459,7 +451,7 @@ class TicketApiController extends Controller
      *      {"name"="ids", "dataType"="array", "required"=true, "description"="ticket ids to be deleted permanently"}
      *  }
      * @param Object  "HTTP Request object with json request in Content"
-     * @param $user "Object "Current User Object"  
+     * @param $user "Object Current User Object"  
      * @return JSON "JSON response"
      */
     public function massDeleteForeverRestAction(Request $request, UserInterface $user)
@@ -506,7 +498,7 @@ class TicketApiController extends Controller
      *      {"name"="ids", "dataType"="array", "required"=true, "description"="ticket ids to be restored"}
      *  }
      * @param Object  "HTTP Request object with json request in Content"
-     * @param $user "Object "Current User Object"  
+     * @param $user "Object Current User Object"  
      * @return JSON "JSON response"
      */
     public function massRestoreRestAction(Request $request, UserInterface $user)
@@ -556,7 +548,7 @@ class TicketApiController extends Controller
      *      {"name"="agentId", "dataType"="integer", "required"=true, "description"="agent id"}
      *  }
      * @param Object  "HTTP Request object with json request in Content"
-     * @param $user "Object "Current User Object"  
+     * @param $user "Object Current User Object"  
      * @return JSON "JSON response"
      */
     public function massAssignAgentRestAction(Request $request, UserInterface $user)
@@ -625,7 +617,7 @@ class TicketApiController extends Controller
      *      {"name"="statusId", "dataType"="integer", "required"=true, "description"="status id"}
      *  }
      * @param Object  "HTTP Request object with json request in Content"
-     * @param $user "Object "Current User Object"  
+     * @param $user "Object Current User Object"  
      * @return JSON "JSON response"
      */
     public function massStatusChangeRestAction(Request $request, UserInterface $user)
@@ -685,7 +677,7 @@ class TicketApiController extends Controller
      *      {"name"="groupId", "dataType"="integer", "required"=true, "description"="group id"}
      *  }
      * @param Object  "HTTP Request object with json request in Content"
-     * @param $user "Object "Current User Object"  
+     * @param $user "Object Current User Object"  
      * @return JSON "JSON response"
      */
     public function massGroupChangeRestAction(Request $request, UserInterface $user)
@@ -745,7 +737,7 @@ class TicketApiController extends Controller
      *      {"name"="priorityId", "dataType"="integer", "required"=true, "description"="priority id"}
      *  }
      * @param Object  "HTTP Request object with json request in Content"
-     * @param $user "Object "Current User Object"  
+     * @param $user "Object Current User Object"  
      * @return JSON "JSON response"
      */
     public function massPriorityChangeRestAction(Request $request, UserInterface $user)
@@ -804,7 +796,7 @@ class TicketApiController extends Controller
      *      {"name"="labelId", "dataType"="integer", "required"=true, "description"="label id"}
      *  }
      * @param Object  "HTTP Request object with json request in Content"
-     * @param $user "Object "Current User Object"  
+     * @param $user "Object Current User Object"  
      * @return JSON "JSON response"
      */
     public function massMoveToLabelRestAction(Request $request, UserInterface $user)
@@ -840,6 +832,220 @@ class TicketApiController extends Controller
                 }
 
                 $json['message'] = (count($ids) > 1) ? 'Success ! Priority of tickets changed successfully.' : 'Success ! Priority of ticket changed successfully.';
+                $statusCode = Response::HTTP_OK;
+            } else {
+                $json['message'] = 'Invalid request method.';
+                $statusCode = Response::HTTP_UNAUTHORIZED;
+            }    
+        } else {
+            $json['message'] = 'Invalid request method.';
+            $statusCode = Response::HTTP_METHOD_NOT_ALLOWED; 
+        }
+        return new JsonResponse($json, $statusCode);
+    }
+
+    /**
+     * This method is used to set team to single/multiple ticket.
+     * Method: PUT
+     * Example: /api/tickets/set-team
+     * Example Request Content: <code> { "ids": [5,8], "teamId": "1"} </code>
+     *  
+     * parameters={
+     *      {"name"="ids", "dataType"="array", "required"=true, "description"="ticket ids"},
+     *      {"name"="teamId", "dataType"="integer", "required"=true, "description"="team id"}
+     *  }
+     * @param Object  "HTTP Request object with json request in Content"
+     * @param $user "Object Current User Object"  
+     * @return JSON "JSON response"
+     */
+    public function massSetTeamRestAction(Request $request, UserInterface $user)
+    {
+        if('PUT' == $request->getMethod()){
+            if($this->container->get('api.service')->isAccessAuthorizedForMember('ROLE_AGENT_ASSIGN_TICKET_GROUP',$user)){
+                $data = json_decode($request->getContent(), true);
+                if(!isset($data['ids']) && !isset($data['teamId'])) {
+                    $json['error'] = 'required ticket id / team id';
+                    return new JsonResponse($json, Response::HTTP_BAD_REQUEST);
+                }
+                $em = $this->getDoctrine()->getManager();
+
+                //Checking team.
+                $team = $em->getRepository('UVDeskCoreFrameworkBundle:SupportTeam')->findOneBy(array('id' => $data['teamId']));
+                if(!is_null($team)){
+                    $ids = $data['ids'];
+                    foreach ($ids as $id) {
+                        //checking ticket
+                        $ticket = $em->getRepository('UVDeskCoreFrameworkBundle:Ticket')->findOneBy(array('id' => $id));
+                        
+                        if($ticket) {
+                            $ticket->setSupportTeam($team);
+                            $em->persist($ticket);
+                            $em->flush();    
+                        } else {
+                            $json['message'] = 'Error ! No such tickets with id: '.$id;
+                            return new JsonResponse($json, Response::HTTP_NOT_FOUND);
+                        }
+                    }    
+                } else {
+                    $json['error'] = 'No team found with id : '.$data['teamId'];
+                    return new JsonResponse($json, Response::HTTP_BAD_REQUEST);
+                }
+
+                $json['message'] = (count($ids) > 1) ? 'Success ! Team for tickets changed successfully.' : 'Success ! Team for ticket changed successfully.';
+                $statusCode = Response::HTTP_OK;
+            } else {
+                $json['message'] = 'Invalid request method.';
+                $statusCode = Response::HTTP_UNAUTHORIZED;
+            }    
+        } else {
+            $json['message'] = 'Invalid request method.';
+            $statusCode = Response::HTTP_METHOD_NOT_ALLOWED; 
+        }
+        return new JsonResponse($json, $statusCode);
+    }
+
+    /**
+     * This method is used to set ticketType to single/multiple ticket.
+     * Method: PUT
+     * Example: /api/tickets/set-ticket-type
+     * Example Request Content: <code> { "ids": [5,8], "ticketTypeId": "1"} </code>
+     *  
+     * parameters={
+     *      {"name"="ids", "dataType"="array", "required"=true, "description"="ticket ids"},
+     *      {"name"="ticketTypeId", "dataType"="integer", "required"=true, "description"="ticketType id"}
+     *  }
+     * @param Object  "HTTP Request object with json request in Content"
+     * @param $user "Object Current User Object"  
+     * @return JSON "JSON response"
+     */
+    public function massSetTicketTypeRestAction(Request $request, UserInterface $user)
+    {
+        if('PUT' == $request->getMethod()){
+            if($this->container->get('api.service')->isAccessAuthorizedForMember('ROLE_AGENT_UPDATE_TICKET_TYPE',$user)){
+                $data = json_decode($request->getContent(), true);
+                if(!isset($data['ids']) && !isset($data['ticketTypeId'])) {
+                    $json['error'] = 'required ticket id / ticket-type id';
+                    return new JsonResponse($json, Response::HTTP_BAD_REQUEST);
+                }
+                $em = $this->getDoctrine()->getManager();
+
+                //Checking ticketType.
+                $ticketType = $em->getRepository('UVDeskCoreFrameworkBundle:TicketType')->findOneBy(array('id' => $data['ticketTypeId']));
+            
+                if(!is_null($ticketType)){
+                    $ids = $data['ids'];
+                    foreach ($ids as $id) {
+                        //checking ticket
+                        $ticket = $em->getRepository('UVDeskCoreFrameworkBundle:Ticket')->findOneBy(array('id' => $id));
+                        
+                        if($ticket) {
+                            if($data['ticketTypeId'] != $ticket->getType()->getId())
+                            {
+                                $ticket->setType($ticketType);
+                                $em->persist($ticket);
+                                $em->flush();
+                            }
+                                
+                        } else {
+                            $json['message'] = 'Error ! No such tickets with id: '.$id;
+                            return new JsonResponse($json, Response::HTTP_NOT_FOUND);
+                        }
+                    }    
+                } else {
+                    $json['error'] = 'No ticket-type found with id : '.$data['teamId'];
+                    return new JsonResponse($json, Response::HTTP_BAD_REQUEST);
+                }
+
+                $json['message'] = (count($ids) > 1) ? 'Success ! Ticket-type for tickets changed successfully.' : 'Success ! Ticket-type for ticket changed successfully.';
+                $statusCode = Response::HTTP_OK;
+            } else {
+                $json['message'] = 'Invalid request method.';
+                $statusCode = Response::HTTP_UNAUTHORIZED;
+            }    
+        } else {
+            $json['message'] = 'Invalid request method.';
+            $statusCode = Response::HTTP_METHOD_NOT_ALLOWED; 
+        }
+        return new JsonResponse($json, $statusCode);
+    }
+
+    /**
+     * set star to ticket by given ticket-id
+     * @param Object  "HTTP Request object with json request in Content." 
+     * @return JSON "JSON response"
+     */
+    public function assignStarToTicketRestAction(Request $request)
+    {
+        $ticketId = $request->attributes->get('ticketId');
+        $em = $this->getDoctrine()->getManager();
+        $ticket = $em->getRepository('UVDeskCoreFrameworkBundle:Ticket')->find($ticketId);
+        
+        if(!$ticket) {
+            $json['message'] = 'Invalid ticket id.';
+            return new JsonResponse($json, Response::HTTP_NOT_FOUND);
+        }
+
+        if($ticket->getIsStarred()){
+            $ticket->setIsStarred(false);
+        } else {
+            $ticket->setIsStarred(true);
+        }
+        $em->persist($ticket);
+        $em->flush();
+
+        $json['message'] = 'Updated.';
+        $statusCode = Response::HTTP_OK; 
+
+        return new JsonResponse($json, $statusCode);
+    }
+
+    /**
+     * Delete ticket by given id (if in trash)
+     * Method: DELETE
+     * Example: <pre> DELETE /api/ticket/40 </pre>
+     *
+     * Api Doc: (
+     *  resource=true,
+     *  section="Ticket",
+     *  description="Delete a given ticket",
+     *  requirements={
+     *      {
+     *          "name"="id",
+     *          "dataType"="integer",
+     *          "requirement"="\d+",
+     *          "description"="id of ticket"
+     *      }
+     *  },
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     400 = "Returned when Bad Request",
+     *     404 = "Returned when the page is not found"
+     *   }
+     * )
+     * 
+     * @param Object  "HTTP Request object with json request in Content" 
+     * @param $user "Object Current User Object"
+     * @return JSON "JSON response"
+     */
+
+    public function deleteForeverRestAction(Request $request, UserInterface $user)
+    {
+        if('DELETE' == $request->getMethod()){
+           
+            if($this->container->get('api.service')->isAccessAuthorizedForMember('ROLE_AGENT_DELETE_TICKET',$user)){
+                $ticketId = $request->attributes->get('id');
+                $em = $this->getDoctrine()->getManager();
+               
+                $ticket = $em->getRepository('UVDeskCoreFrameworkBundle:Ticket')->findOneBy(array('id' => $ticketId));
+                if($ticket) {
+                    $em->remove($ticket);
+                    $em->flush();  
+                } else {
+                    $json['message'] = 'Error ! No such tickets with id: '.$ticketId;
+                    return new JsonResponse($json, Response::HTTP_NOT_FOUND);
+                }
+                
+                $json['message'] = 'Success ! Ticket deleted successfully.';
                 $statusCode = Response::HTTP_OK;
             } else {
                 $json['message'] = 'Invalid request method.';

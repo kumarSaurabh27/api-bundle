@@ -16,11 +16,11 @@ helpdesk_api_trash_ticket:
     controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController::deleteTicketRestAction
     methods:  [PUT]
     
-# Assign agent to ticket
-helpdesk_api_assign_agent_to_ticket:
-    path:   /ticket/{ticketId}/agent
-    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController::assignAgentRestAction
-    methods: [PUT]
+# # Assign agent to ticket
+# helpdesk_api_assign_agent_to_ticket:
+#     path:   /ticket/{ticketId}/agent
+#     controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController::assignAgentRestAction
+#     methods: [PUT]
 
 # Create Ticket Label
 helpdesk_api_add_label:
@@ -41,49 +41,75 @@ helpdesk_api_delete_label:
     methods: [DELETE]
 
 # Trash Single/Multiple Tickets
-api_mass_ticket_trash:
+helpdesk_api_mass_ticket_trash:
     path: /tickets/trash
     controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massDeleteRestAction
     methods: [PUT]
 
 # Delete Single/Multiple Tickets
-api_mass_ticket_delete:
+helpdesk_api_mass_ticket_delete:
     path: /tickets/delete
     controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massDeleteForeverRestAction
     methods: [DELETE]
 
 # Restore Single/Multiple Tickets
-api_mass_ticket_restore:
+helpdesk_api_mass_ticket_restore:
     path: /tickets/restore
     controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massRestoreRestAction
     methods: [PUT]
 
 # Assign Single/Multiple Tickets to Agent
-api_mass_ticket_assign_agent:
+helpdesk_api_mass_ticket_assign_agent:
     path: /tickets/assign-agent
     controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massAssignAgentRestAction
     methods: [PUT]
 
 # Set status to Single/Multiple Tickets
-api_mass_ticket_status_change:
+helpdesk_api_mass_ticket_status_change:
     path: /tickets/set-status
     controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massStatusChangeRestAction
     methods: [PUT]
 
 # Change group of Single/Multiple Tickets
-api_mass_ticket_group_change:
+helpdesk_api_mass_ticket_group_change:
     path: /tickets/set-group
     controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massGroupChangeRestAction
     methods: [PUT]
 
 # Change Priority of Single/Multiple Tickets
-api_mass_ticket_priority_change:
+helpdesk_api_mass_ticket_priority_change:
     path: /tickets/set-priority
     controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massPriorityChangeRestAction
     methods: [PUT]
 
 # Set Label on Single/Multiple Tickets
-api_mass_ticket_label:
+helpdesk_api_mass_ticket_label:
     path: /tickets/set-label
     controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massMoveToLabelRestAction
     methods: [PUT]
+
+# Assign Team to single/multiple ticket 
+helpdesk_api_mass_ticket_team:
+    path: /tickets/set-team
+    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massSetTeamRestAction
+    methods: [PUT]
+
+# Assign ticket-type to single/multiple ticket
+helpdesk_api_mass_ticket_type:
+    path: /tickets/set-ticket-type
+    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:massSetTicketTypeRestAction
+    methods: [PUT]
+
+#Assign star to ticket
+helpdesk_api_assign_star_to_ticket:
+    path: /ticket/assign-star/{ticketId}
+    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:assignStarToTicketRestAction
+    methods: [PUT]
+
+# Permanently delete ticket by id.
+helpdesk_api_delete_ticket:
+    path:   /ticket/delete/{id}
+    controller: Webkul\UVDesk\ApiBundle\Controller\Ticket\TicketApiController:deleteForeverRestAction
+    methods: [DELETE]
+    requirements:
+        id: '\d+'
